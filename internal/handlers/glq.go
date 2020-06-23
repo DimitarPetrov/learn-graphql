@@ -7,40 +7,39 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/DimitarPetrov/learn-graphql/internal/gql"
 	"github.com/DimitarPetrov/learn-graphql/internal/gql/resolvers"
+	"github.com/DimitarPetrov/learn-graphql/internal/storage"
 	"github.com/DimitarPetrov/learn-graphql/pkg/routes"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type GraphQLHandler struct {}
-
-func (*GraphQLHandler) Route() Route {
-	return Route{
-		Endpoint: Endpoint{
-			Method: http.MethodPost,
-			Path: routes.GraphqlURL,
-		},
-		HandlerFunc: GraphqlHandlerFunc(),
+func NewGraphqlHandler(ORM *storage.ORM) *graphqlHandler {
+	return &graphqlHandler{
+		ORM: ORM,
 	}
 }
 
-type PlaygroundHandler struct {}
+type graphqlHandler struct {
+	ORM *storage.ORM
+}
 
-func (*PlaygroundHandler) Route() Route {
+func (gh *graphqlHandler) Route() Route {
 	return Route{
 		Endpoint: Endpoint{
-			Method: http.MethodGet,
-			Path: routes.PlaygroundURL,
+			Method: http.MethodPost,
+			Path:   routes.GraphqlURL,
 		},
-		HandlerFunc: PlaygroundHandlerFunc(routes.GraphqlURL),
+		HandlerFunc: gh.graphqlHandlerFunc(),
 	}
 }
 
 // GraphqlHandlerFunc defines the GQLGen GraphQL server handler
-func GraphqlHandlerFunc() gin.HandlerFunc {
+func (gh *graphqlHandler) graphqlHandlerFunc() gin.HandlerFunc {
 	// NewExecutableSchema and Config are in the generated.go file
 	c := gql.Config{
-		Resolvers: &resolvers.Resolver{},
+		Resolvers: &resolvers.Resolver{
+			ORM: gh.ORM,
+		},
 	}
 
 	h := gqhandler.New(gql.NewExecutableSchema(c))
@@ -52,8 +51,20 @@ func GraphqlHandlerFunc() gin.HandlerFunc {
 	}
 }
 
+type PlaygroundHandler struct{}
+
+func (*PlaygroundHandler) Route() Route {
+	return Route{
+		Endpoint: Endpoint{
+			Method: http.MethodGet,
+			Path:   routes.PlaygroundURL,
+		},
+		HandlerFunc: playgroundHandlerFunc(routes.GraphqlURL),
+	}
+}
+
 // PlaygroundHandlerFunc Defines the Playground handler to expose our playground
-func PlaygroundHandlerFunc(path string) gin.HandlerFunc {
+func playgroundHandlerFunc(path string) gin.HandlerFunc {
 	h := playground.Handler("Go GraphQL Server", path)
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)

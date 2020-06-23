@@ -1,7 +1,7 @@
 package routes
 
 const (
-	PingURL = "/ping"
-	GraphqlURL = "/graphql"
+	PingURL       = "/ping"
+	GraphqlURL    = "/graphql"
 	PlaygroundURL = "/"
 )

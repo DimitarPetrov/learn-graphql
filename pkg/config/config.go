@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/DimitarPetrov/learn-graphql/internal/storage"
 	"github.com/DimitarPetrov/learn-graphql/pkg/server"
 )
 
@@ -10,11 +11,12 @@ type Config interface {
 }
 
 type Settings struct {
-	Server server.Settings
+	Server  server.Settings
+	Storage storage.Settings
 }
 
 func (s *Settings) Init() error {
-	configs := []Config{&s.Server}
+	configs := []Config{&s.Server, &s.Storage}
 	for _, v := range configs {
 		if err := v.Init(); err != nil {
 			return err

@@ -3,37 +3,13 @@ package resolvers
 // THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.
 
 import (
-	"context"
+	"github.com/DimitarPetrov/learn-graphql/internal/storage"
 
 	"github.com/DimitarPetrov/learn-graphql/internal/gql"
-	"github.com/DimitarPetrov/learn-graphql/internal/gql/models"
 )
 
-type Resolver struct{}
-
-func (r *mutationResolver) CreateUser(ctx context.Context, input models.UserInput) (*models.User, error) {
-	panic("not implemented")
-}
-
-func (r *mutationResolver) UpdateUser(ctx context.Context, input models.UserInput) (*models.User, error) {
-	panic("not implemented")
-}
-
-func (r *mutationResolver) DeleteUser(ctx context.Context, userID string) (bool, error) {
-	panic("not implemented")
-}
-
-func (r *queryResolver) Users(ctx context.Context, userID *string) ([]*models.User, error) {
-	id := "id"
-	email := "email"
-	uID := "uid"
-	return []*models.User{
-		{
-			ID: &id,
-			Email: &email,
-			UserID: &uID,
-		},
-	}, nil
+type Resolver struct {
+	ORM *storage.ORM
 }
 
 // Mutation returns gql.MutationResolver implementation.
