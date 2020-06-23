@@ -20,5 +20,7 @@ func main() {
 
 	server.Run(cfg.Server, []handlers.Handler{
 		&handlers.PingHandler{},
+		&handlers.GraphQLHandler{},
+		&handlers.PlaygroundHandler{},
 	})
 }
